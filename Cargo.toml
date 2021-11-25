@@ -1,0 +1,10 @@
+[package]
+name = "solar"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+bitbar = "0.5.x"
+chrono = "0.4.x"
+circadia = "0.0.x"
