@@ -5,6 +5,8 @@ edition = "2021"
 publish = false
 
 [dependencies]
-bitbar = "0.5.x"
+bitbar = "0.10.1"
 chrono = "0.4.x"
-circadia = "0.0.x"
+circadia = "0.1.0"
+serde = { version = "1.x", features = ["derive"] }
+ureq = { version = "3.4.1", features = ["json"] }

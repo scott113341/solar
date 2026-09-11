@@ -1,5 +1,20 @@
-use chrono::{Date, DateTime, Duration, Utc};
+use chrono::{DateTime, Duration, NaiveDate, Utc};
 use circadia::{time_of_event, GlobalPosition, SunEvent};
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+pub struct IpLocation {
+    pub latitude: f64,
+    pub longitude: f64,
+    pub city: String,
+    pub region: String,
+}
+
+/// Look up the machine's approximate latitude/longitude via IP geolocation
+pub fn geolocate() -> Result<IpLocation, Box<dyn std::error::Error>> {
+    let loc: IpLocation = ureq::get("https://ipapi.co/json/").call()?.into_body().read_json()?;
+    Ok(loc)
+}
 
 pub fn fmt_hr_min(duration: Duration) -> String {
     let duration_min = duration.num_minutes();
@@ -22,19 +37,28 @@ pub fn fmt_min_sec(duration: Duration) -> String {
     }
 }
 
-pub fn sunrise_sunset(day: Date<Utc>, position: &GlobalPosition) -> (DateTime<Utc>, DateTime<Utc>) {
-    let sunrise = time_of_event(day, &position, SunEvent::SUNRISE).unwrap();
-    let sunset = time_of_event(day, &position, SunEvent::SUNSET).unwrap();
+pub fn sunrise_sunset(day: NaiveDate, position: &GlobalPosition) -> (DateTime<Utc>, DateTime<Utc>) {
+    let sunrise = event_time(day, position, SunEvent::SUNRISE);
+    let sunset = event_time(day, position, SunEvent::SUNSET);
     (sunrise, sunset)
 }
 
-pub fn pct_year_progress(today: Date<Utc>, position: &GlobalPosition) -> (Duration, Duration, f64) {
+/// circadia 0.1's `time_of_event` still takes the deprecated `chrono::Date<Utc>`,
+/// so this wrapper contains that one unavoidable deprecated call behind a
+/// `NaiveDate` API.
+#[allow(deprecated)]
+fn event_time(day: NaiveDate, position: &GlobalPosition, event: SunEvent) -> DateTime<Utc> {
+    let date = chrono::Date::<Utc>::from_utc(day, Utc);
+    time_of_event(date, position, event).expect("sun event has no time at this location/date")
+}
+
+pub fn pct_year_progress(today: NaiveDate, position: &GlobalPosition) -> (Duration, Duration, f64) {
     // Find min/max day durations within the next year
     let mut date = today;
-    let mut min = Duration::max_value();
-    let mut max = Duration::min_value();
+    let mut min = Duration::MAX;
+    let mut max = Duration::MIN;
     for _ in 1..=366 {
-        let (sunrise, sunset) = sunrise_sunset(date, &position);
+        let (sunrise, sunset) = sunrise_sunset(date, position);
         let duration = sunset - sunrise;
         if duration < min {
             min = duration;
@@ -42,7 +66,7 @@ pub fn pct_year_progress(today: Date<Utc>, position: &GlobalPosition) -> (Durati
         if duration > max {
             max = duration;
         }
-        date = date.succ();
+        date = date.succ_opt().expect("date out of range");
     }
 
     // Find the "progress" between the day min/max. For example, assume the min day duration is 10

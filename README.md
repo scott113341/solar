@@ -2,7 +2,8 @@
 
 Plugin for [xbar](https://xbarapp.com) that shows information about the solar cycle.
 
-Example usage after installing:
+By default, it looks up your approximate location from your public IP address. To skip this and 
+set it to a specific location, set both environment variables:
 
 `SOLAR_LATITUDE=40.1 SOLAR_LONGITUDE=-105.2 solar`
 
