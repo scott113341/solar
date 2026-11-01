@@ -83,7 +83,7 @@ pub fn pct_year_progress(today: NaiveDate, position: &GlobalPosition) -> (Durati
     //   10h {██      } 14h
     //         ^ 11h
     let current_day_length = {
-        let (today_sunrise, today_sunset) = sunrise_sunset(today, &position);
+        let (today_sunrise, today_sunset) = sunrise_sunset(today, position);
         today_sunset - today_sunrise
     };
     let maximum_delta = max - min;
