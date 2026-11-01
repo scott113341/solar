@@ -10,3 +10,6 @@ chrono = "0.4.x"
 circadia = "0.1.0"
 serde = { version = "1.x", features = ["derive"] }
 ureq = { version = "3.4.1", features = ["json"] }
+
+[dev-dependencies]
+chrono-tz = "0.10"
