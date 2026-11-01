@@ -11,3 +11,10 @@ set it to a specific location, set both environment variables:
 
 "Progress" shows how close/far today is from the shortest and longest upcoming days. Nice when I'm really feeling how
 short the days are getting, but the minimum is in sight and not _that_ much shorter.
+
+## Testing
+
+To see the output at a specific time, set `SOLAR_NOW` to an RFC 3339 timestamp. `TZ` sets the time zone used to determine
+the date and display times:
+
+`SOLAR_NOW=2026-11-01T12:00:00-07:00 TZ=America/Denver solar`
