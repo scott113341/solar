@@ -12,7 +12,10 @@ pub struct IpLocation {
 
 /// Look up the machine's approximate latitude/longitude via IP geolocation
 pub fn geolocate() -> Result<IpLocation, Box<dyn std::error::Error>> {
-    let loc: IpLocation = ureq::get("https://ipapi.co/json/").call()?.into_body().read_json()?;
+    let loc: IpLocation = ureq::get("https://ipapi.co/json/")
+        .call()?
+        .into_body()
+        .read_json()?;
     Ok(loc)
 }
 
@@ -75,7 +78,7 @@ pub fn pct_year_progress(today: NaiveDate, position: &GlobalPosition) -> (Durati
     //   10h {██      } 14h
     //         ^ 11h
     let current_day_length = {
-        let (today_sunrise, today_sunset) = sunrise_sunset(today, &position);
+        let (today_sunrise, today_sunset) = sunrise_sunset(today, position);
         today_sunset - today_sunrise
     };
     let maximum_delta = max - min;
@@ -97,7 +100,7 @@ pub fn pct_progress_bar(progress: f64, progress_bar_length: usize) -> String {
     // Add a partial block if necessary
     let partial_block = full_blocks - full_blocks.floor();
     if let Some(partial_block) = match partial_block * 100.0 {
-        p if (0.0..6.25).contains(&p) => None,            // ~0
+        p if (0.0..6.25).contains(&p) => None,          // ~0
         p if (6.25..18.75).contains(&p) => Some('▏'),   // 1/8
         p if (18.75..31.25).contains(&p) => Some('▎'),  // 1/4
         p if (31.25..43.75).contains(&p) => Some('▍'),  // 3/8
