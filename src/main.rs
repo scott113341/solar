@@ -51,9 +51,7 @@ fn resolve_location() -> Location {
             place: None,
         },
         _ => {
-            let loc = geolocate().expect(
-                "Could not look up location from IP",
-            );
+            let loc = geolocate().expect("Could not look up location from IP");
             Location {
                 lat: loc.latitude,
                 lng: loc.longitude,
