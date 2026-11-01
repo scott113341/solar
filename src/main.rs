@@ -51,9 +51,7 @@ fn resolve_location() -> Location {
             place: None,
         },
         _ => {
-            let loc = geolocate().expect(
-                "Could not look up location from IP",
-            );
+            let loc = geolocate().expect("Could not look up location from IP");
             Location {
                 lat: loc.latitude,
                 lng: loc.longitude,
@@ -64,7 +62,7 @@ fn resolve_location() -> Location {
 }
 
 fn item_daytime_short(sunrise: DateTime<Utc>, sunset: DateTime<Utc>) -> MenuItem {
-    MenuItem::new(format!("{}", fmt_hr_min(sunset - sunrise)))
+    MenuItem::new(fmt_hr_min(sunset - sunrise).to_string())
 }
 
 fn item_location(location: &Location) -> MenuItem {
